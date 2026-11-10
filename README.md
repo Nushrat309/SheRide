@@ -3,6 +3,8 @@
 SheRide connects verified women who are driving somewhere with women who need a seat going the same way.
 Only women can join, and every ride sharer and passenger can talk in a private in-app chat.
 
+**Tech stack:** Python · Flask · SQLite · HTML/CSS · JavaScript
+
 ## Run it
 
 ```bash
@@ -65,3 +67,7 @@ This is a demo. Things to replace or add:
    gunicorn/waitress with HTTPS, and turn off `debug`.
 7. **Smarter SheBot:** swap `shebot_reply()` for an LLM call, keeping the rule-based emergency
    answer as a fallback.
+
+## Author
+
+Built by **Nushrat Jahan** ([@Nushrat309](https://github.com/Nushrat309)).
