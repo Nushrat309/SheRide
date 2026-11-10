@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}SheRide{% endblock %} · SheRide</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="{{ url_for('index') }}">🌸 SheRide</a>
+  <nav>
+    <a href="{{ url_for('rides') }}">Find a ride</a>
+    {% if user %}
+      <a href="{{ url_for('new_ride') }}">Offer a ride</a>
+      <a href="{{ url_for('dashboard') }}">My trips</a>
+      <span class="who">{{ user.name.split()[0] }}{% if user.verified %} <span title="Verified">✓</span>{% endif %}</span>
+      <form method="post" action="{{ url_for('logout') }}" class="inline">
+        {{ csrf_field() }}<button class="link">Log out</button>
+      </form>
+    {% else %}
+      <a href="{{ url_for('login') }}">Log in</a>
+      <a class="btn small" href="{{ url_for('register') }}">Join</a>
+    {% endif %}
+  </nav>
+</header>
+
+<main class="container">
+  {% if user and not user.verified and request.endpoint != 'verify' %}
+    <div class="flash">Your account isn't verified yet. <a href="{{ url_for('verify') }}">Verify now</a> to offer or book rides.</div>
+  {% endif %}
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}<div class="flash {{ cat }}">{{ m }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+{% block shebot %}
+<button class="bot-fab" id="bot-fab" aria-label="Open SheBot help">💬</button>
+<section class="bot-panel" id="bot-panel" aria-label="SheBot help">
+  <header class="bot-head">
+    <div><strong>SheBot</strong><br><span class="small">Your SheRide assistant</span></div>
+    <button class="link" id="bot-close" aria-label="Close">✕</button>
+  </header>
+  <div class="bot-log" id="bot-log"></div>
+  <div class="chips" id="bot-chips"></div>
+  <form class="composer" id="bot-form">
+    <input id="bot-input" placeholder="Ask SheBot…" autocomplete="off" maxlength="500">
+    <button class="btn small">Send</button>
+  </form>
+</section>
+<script src="{{ url_for('static', filename='shebot.js') }}"></script>
+{% endblock %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

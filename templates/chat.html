@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Chat with {{ other_name }}{% endblock %}
+{% block shebot %}{% endblock %}
+{% block content %}
+<div class="card chat">
+  <div class="chat-head">
+    <a href="{{ url_for('ride_detail', ride_id=b.ride_id) }}" class="muted small">← Ride details</a>
+    <div class="row between">
+      <div>
+        <strong>{{ other_name }}</strong> <span class="verified">✓</span>
+        <span class="muted small">· {{ 'Passenger' if is_driver else 'Ride sharer' }}</span><br>
+        <span class="muted small">{{ b.origin }} → {{ b.destination }} · {{ b.depart_at|dt }}</span>
+      </div>
+      <span id="chat-status" class="badge {{ b.status }}">{{ b.status|capitalize }}</span>
+    </div>
+  </div>
+
+  <div id="messages" class="messages" aria-live="polite"
+       data-url="{{ url_for('api_messages', booking_id=b.id) }}" data-me="{{ user.id }}"></div>
+
+  <div id="chat-open" {% if not chat_open %}hidden{% endif %}>
+    <div class="chips">
+      {% for q in quick_replies %}<button type="button" class="chip" data-quick>{{ q }}</button>{% endfor %}
+    </div>
+    <form class="composer" id="chat-form">
+      <input id="chat-input" placeholder="Type a message…" autocomplete="off" maxlength="1000">
+      <button class="btn small">Send</button>
+    </form>
+  </div>
+  <div id="chat-closed" class="chat-closed" {% if chat_open %}hidden{% endif %}>
+    This chat is closed because the booking is no longer active.
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='chat.js') }}"></script>{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Offer a ride{% endblock %}
+{% block content %}
+<form class="card form-card wide" method="post">
+  {{ csrf_field() }}
+  <h1>Offer a ride</h1>
+  <p class="muted">Share your empty seats with other verified women going your way.</p>
+  <div class="two">
+    <div><label for="origin">Leaving from</label>
+      <input id="origin" name="origin" value="{{ form.origin }}" placeholder="e.g. Dhanmondi 27" required></div>
+    <div><label for="destination">Going to</label>
+      <input id="destination" name="destination" value="{{ form.destination }}" placeholder="e.g. Gulshan 1" required></div>
+  </div>
+  <div class="two">
+    <div><label for="depart_at">Departure</label>
+      <input id="depart_at" name="depart_at" type="datetime-local" value="{{ form.depart_at }}" required></div>
+    <div><label for="seats">Free seats</label>
+      <select id="seats" name="seats">
+        {% for n in range(1, 7) %}<option value="{{ n }}" {% if form.seats|string == n|string %}selected{% endif %}>{{ n }}</option>{% endfor %}
+      </select></div>
+  </div>
+  <div class="two">
+    <div><label for="fare">Fare per seat (৳)</label>
+      <input id="fare" name="fare" type="number" min="0" max="10000" value="{{ form.fare or 150 }}" required></div>
+    <div><label for="vehicle">Vehicle</label>
+      <input id="vehicle" name="vehicle" value="{{ form.vehicle }}" placeholder="e.g. Toyota Axio (white)" required></div>
+  </div>
+  <label for="notes">Notes for passengers (optional)</label>
+  <textarea id="notes" name="notes" rows="3" maxlength="500" placeholder="Pickup points along the way, luggage space, AC…">{{ form.notes }}</textarea>
+  <button class="btn full">Publish ride</button>
+</form>
+{% endblock %}

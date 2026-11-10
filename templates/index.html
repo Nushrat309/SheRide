@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_macros.html" import ride_card %}
+{% block title %}Women-only ride sharing{% endblock %}
+{% block content %}
+<section class="hero">
+  <span class="pill">Women-only · ID-verified members</span>
+  <h1>Share rides with women you can trust.</h1>
+  <p>SheRide connects verified women who are driving your way with women who need a seat.
+     Split the cost, travel safer, and chat in the app before you meet.</p>
+  <form class="search" action="{{ url_for('rides') }}">
+    <input name="from" placeholder="From (e.g. Dhanmondi)" aria-label="From">
+    <input name="to" placeholder="To (e.g. Gulshan)" aria-label="To">
+    <input name="date" type="date" aria-label="Date">
+    <button class="btn">Search</button>
+  </form>
+</section>
+
+<section class="steps">
+  <div class="card"><div class="step-num">1</div><h3>Join &amp; verify</h3>
+    <p class="muted">Sign up and verify with your National ID. Only verified women get in.</p></div>
+  <div class="card"><div class="step-num">2</div><h3>Offer or find a ride</h3>
+    <p class="muted">Post your route and free seats, or search for a ride going your way.</p></div>
+  <div class="card"><div class="step-num">3</div><h3>Chat &amp; go</h3>
+    <p class="muted">Agree on the pickup spot in a private chat. Your number stays private.</p></div>
+</section>
+
+<div class="row between">
+  <h2>Upcoming rides</h2>
+  <a href="{{ url_for('rides') }}">See all →</a>
+</div>
+<div class="grid">
+  {% for r in rides %}{{ ride_card(r) }}
+  {% else %}<p class="muted">No upcoming rides yet. <a href="{{ url_for('new_ride') }}">Offer the first one!</a></p>
+  {% endfor %}
+</div>
+{% endblock %}

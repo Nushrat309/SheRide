@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Verify your identity{% endblock %}
+{% block content %}
+<form class="card form-card" method="post">
+  {{ csrf_field() }}
+  <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+  <h1>Verify your identity</h1>
+  <p class="muted">To keep SheRide women-only, every member verifies with her National ID before she can offer,
+     book or chat.</p>
+  <label for="nid">National ID (NID) number</label>
+  <input id="nid" name="nid" inputmode="numeric" placeholder="10, 13 or 17 digits" required>
+  <label class="check"><input type="checkbox" name="selfie" value="1">
+    I agree to a live selfie check that is matched against my NID photo.</label>
+  <button class="btn full">Verify me</button>
+  <div class="demo-box small">
+    <strong>Demo mode:</strong> any NID with the right number of digits is approved instantly. A real launch
+    would use a KYC provider (NID + live selfie match) and keep accounts pending until they are approved.
+  </div>
+</form>
+{% endblock %}

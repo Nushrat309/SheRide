@@ -1,0 +1,22 @@
+{% macro ride_card(r) %}
+<a class="card ride-card" href="{{ url_for('ride_detail', ride_id=r.id) }}">
+  <div class="route">{{ r.origin }} <span class="arrow">→</span> {{ r.destination }}</div>
+  <div class="muted">{{ r.depart_at|dt }}</div>
+  <div class="row between">
+    <span>👩 {{ r.driver_name }} <span class="verified" title="Verified">✓</span></span>
+    <span class="price">৳{{ r.fare }}<small>/seat</small></span>
+  </div>
+  <div class="row between">
+    <span class="muted small">{{ r.vehicle }}</span>
+    {% if r.seats_left > 0 %}
+      <span class="badge">{{ r.seats_left }} seat{{ '' if r.seats_left == 1 else 's' }} left</span>
+    {% else %}
+      <span class="badge cancelled">Full</span>
+    {% endif %}
+  </div>
+</a>
+{% endmacro %}
+
+{% macro status_badge(status) %}
+<span class="badge {{ status }}">{{ status|capitalize }}</span>
+{% endmacro %}

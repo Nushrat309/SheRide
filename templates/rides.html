@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_macros.html" import ride_card %}
+{% block title %}Find a ride{% endblock %}
+{% block content %}
+<h1>Find a ride</h1>
+<form class="search boxed" action="{{ url_for('rides') }}">
+  <input name="from" value="{{ q.from }}" placeholder="From" aria-label="From">
+  <input name="to" value="{{ q.to }}" placeholder="To" aria-label="To">
+  <input name="date" type="date" value="{{ q.date }}" aria-label="Date">
+  <button class="btn">Search</button>
+</form>
+<p class="muted">{{ rides|length }} ride{{ '' if rides|length == 1 else 's' }} found
+  {% if q.from or q.to or q.date %}· <a href="{{ url_for('rides') }}">clear filters</a>{% endif %}</p>
+<div class="grid">
+  {% for r in rides %}{{ ride_card(r) }}
+  {% else %}<div class="card empty">No rides match your search. Try a nearby area or another date.</div>
+  {% endfor %}
+</div>
+{% endblock %}

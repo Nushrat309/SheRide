@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge %}
+{% block title %}{{ ride.origin }} → {{ ride.destination }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('rides') }}" class="muted">← All rides</a>
+
+<div class="card detail">
+  <div class="row between">
+    <h1 class="route big">{{ ride.origin }} <span class="arrow">→</span> {{ ride.destination }}</h1>
+    {% if ride.status == 'cancelled' %}<span class="badge cancelled">Ride cancelled</span>
+    {% elif ride_past %}<span class="badge">Departed</span>{% endif %}
+  </div>
+  <dl class="facts">
+    <div><dt>Departs</dt><dd>{{ ride.depart_at|dt }}</dd></div>
+    <div><dt>Fare</dt><dd>৳{{ ride.fare }} / seat</dd></div>
+    <div><dt>Seats left</dt><dd>{{ ride.seats_left }} of {{ ride.seats_total }}</dd></div>
+    <div><dt>Vehicle</dt><dd>{{ ride.vehicle }}</dd></div>
+    <div><dt>Ride sharer</dt><dd>{{ ride.driver_name }} <span class="verified">✓ Verified</span></dd></div>
+  </dl>
+  {% if ride.notes %}<p class="notes">“{{ ride.notes }}”</p>{% endif %}
+</div>
+
+{% if not user %}
+  <div class="card cta">
+    <p><strong>Want a seat?</strong> Join SheRide and verify your identity to request seats and chat with the ride sharer.</p>
+    <a class="btn" href="{{ url_for('register') }}">Join SheRide</a>
+    <a class="btn ghost" href="{{ url_for('login', next=request.path) }}">Log in</a>
+  </div>
+
+{% elif is_driver %}
+  <h2>Seat requests</h2>
+  {% for b in bookings %}
+    <div class="card booking-row">
+      <div><strong>{{ b.passenger_name }}</strong> <span class="verified">✓</span>
+        · {{ b.seats }} seat{{ '' if b.seats == 1 else 's' }} {{ status_badge(b.status) }}</div>
+      <div class="row">
+        <a class="btn small ghost" href="{{ url_for('chat', booking_id=b.id) }}">💬 Chat</a>
+        {% if b.status == 'pending' and ride.status == 'open' %}
+          <form method="post" action="{{ url_for('booking_action', booking_id=b.id, action='accept') }}">
+            {{ csrf_field() }}<button class="btn small ok">Accept</button></form>
+          <form method="post" action="{{ url_for('booking_action', booking_id=b.id, action='decline') }}">
+            {{ csrf_field() }}<button class="btn small bad">Decline</button></form>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <p class="muted">No seat requests yet. They'll appear here, and you can chat with each passenger.</p>
+  {% endfor %}
+  {% if ride.status == 'open' and not ride_past %}
+    <form method="post" action="{{ url_for('cancel_ride', ride_id=ride.id) }}"
+          onsubmit="return confirm('Cancel this ride? All passengers will be notified.');">
+      {{ csrf_field() }}<button class="btn ghost danger">Cancel this ride</button>
+    </form>
+  {% endif %}
+
+{% else %}
+  {% if my_booking and my_booking.status in ('pending', 'accepted') %}
+    <div class="card cta">
+      <p>Your request for {{ my_booking.seats }} seat{{ '' if my_booking.seats == 1 else 's' }}: {{ status_badge(my_booking.status) }}</p>
+      <div class="row">
+        <a class="btn" href="{{ url_for('chat', booking_id=my_booking.id) }}">💬 Chat with {{ ride.driver_name.split()[0] }}</a>
+        <form method="post" action="{{ url_for('booking_action', booking_id=my_booking.id, action='cancel') }}"
+              onsubmit="return confirm('Cancel your booking?');">
+          {{ csrf_field() }}<button class="btn ghost">Cancel booking</button>
+        </form>
+      </div>
+    </div>
+  {% elif ride.status == 'open' and ride.seats_left > 0 and not ride_past %}
+    <form class="card cta" method="post" action="{{ url_for('book_ride', ride_id=ride.id) }}">
+      {{ csrf_field() }}
+      {% if my_booking %}<p class="muted">Your previous request was {{ my_booking.status }}. You can request again.</p>{% endif %}
+      <div class="row">
+        <label for="seats" class="inline-label">Seats</label>
+        <select id="seats" name="seats" class="narrow">
+          {% for n in range(1, ride.seats_left + 1) %}<option>{{ n }}</option>{% endfor %}
+        </select>
+        <button class="btn">Request seat</button>
+      </div>
+      <p class="muted small">A private chat with {{ ride.driver_name.split()[0] }} opens right away. Your phone number stays private.</p>
+    </form>
+  {% else %}
+    <div class="card empty">This ride is no longer accepting requests.</div>
+  {% endif %}
+{% endif %}
+{% endblock %}

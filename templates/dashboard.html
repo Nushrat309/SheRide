@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_badge %}
+{% block title %}My trips{% endblock %}
+{% block content %}
+<h1>My trips</h1>
+
+<section>
+  <div class="row between">
+    <h2>Rides I'm offering</h2>
+    <a class="btn small" href="{{ url_for('new_ride') }}">+ Offer a ride</a>
+  </div>
+  {% for r in offered %}
+    <a class="card list-row" href="{{ url_for('ride_detail', ride_id=r.id) }}">
+      <div>
+        <div class="route">{{ r.origin }} → {{ r.destination }}</div>
+        <div class="muted small">{{ r.depart_at|dt }} · {{ r.seats_left }}/{{ r.seats_total }} seats left · ৳{{ r.fare }}/seat</div>
+      </div>
+      <div class="row">
+        {% if r.status == 'cancelled' %}{{ status_badge('cancelled') }}
+        {% elif r.pending_count %}<span class="badge pending">{{ r.pending_count }} new request{{ '' if r.pending_count == 1 else 's' }}</span>{% endif %}
+      </div>
+    </a>
+  {% else %}
+    <p class="muted">You haven't offered any rides yet.</p>
+  {% endfor %}
+</section>
+
+<section>
+  <h2>Seats I've booked</h2>
+  {% for b in booked %}
+    <div class="card list-row">
+      <a href="{{ url_for('ride_detail', ride_id=b.ride_id) }}" class="grow">
+        <div class="route">{{ b.origin }} → {{ b.destination }}</div>
+        <div class="muted small">{{ b.depart_at|dt }} · with {{ b.driver_name }} · {{ b.seats }} seat{{ '' if b.seats == 1 else 's' }} · ৳{{ b.fare * b.seats }}</div>
+      </a>
+      <div class="row">
+        {{ status_badge(b.status) }}
+        <a class="btn small ghost" href="{{ url_for('chat', booking_id=b.id) }}">💬 Chat</a>
+      </div>
+    </div>
+  {% else %}
+    <p class="muted">No bookings yet. <a href="{{ url_for('rides') }}">Find a ride</a>.</p>
+  {% endfor %}
+</section>
+{% endblock %}

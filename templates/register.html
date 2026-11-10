@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Join{% endblock %}
+{% block content %}
+<form class="card form-card" method="post">
+  {{ csrf_field() }}
+  <h1>Join SheRide</h1>
+  <p class="muted">A ride-sharing community for women only. Every member is ID-verified.</p>
+  <label for="name">Full name</label>
+  <input id="name" name="name" value="{{ form.name }}" required>
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" value="{{ form.email }}" required>
+  <label for="phone">Mobile number</label>
+  <input id="phone" name="phone" value="{{ form.phone }}" placeholder="01712345678" required>
+  <label for="gender">I am a</label>
+  <select id="gender" name="gender" required>
+    <option value="" disabled {% if not form.gender %}selected{% endif %}>Select…</option>
+    <option value="woman" {% if form.gender == 'woman' %}selected{% endif %}>Woman</option>
+    <option value="man" {% if form.gender == 'man' %}selected{% endif %}>Man</option>
+    <option value="other" {% if form.gender == 'other' %}selected{% endif %}>Other</option>
+  </select>
+  <label for="password">Password</label>
+  <input id="password" name="password" type="password" minlength="6" required>
+  <label class="check"><input type="checkbox" name="agree" value="1" {% if form.agree %}checked{% endif %}>
+    I'm a woman and I agree to the community guidelines: respectful conduct, honest information and no
+    bookings made for anyone else.</label>
+  <button class="btn full">Create account</button>
+  <p class="muted small">Already a member? <a href="{{ url_for('login') }}">Log in</a></p>
+</form>
+{% endblock %}

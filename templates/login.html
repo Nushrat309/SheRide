@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<form class="card form-card" method="post">
+  {{ csrf_field() }}
+  <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+  <h1>Welcome back</h1>
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" required autofocus>
+  <label for="password">Password</label>
+  <input id="password" name="password" type="password" required>
+  <button class="btn full">Log in</button>
+  <p class="muted small">New here? <a href="{{ url_for('register') }}">Join SheRide</a></p>
+  <div class="demo-box small">
+    <strong>Demo accounts</strong> (password <code>demo123</code>):<br>
+    ayesha@demo.com · nadia@demo.com · sara@demo.com
+  </div>
+</form>
+{% endblock %}
